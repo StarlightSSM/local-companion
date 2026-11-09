@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+httpx
+python-multipart
+feedparser
+ddgs
+beautifulsoup4
+pypdf
+python-docx
+python-pptx
+markdown
+faster-whisper
+yt-dlp
+numpy
+matplotlib

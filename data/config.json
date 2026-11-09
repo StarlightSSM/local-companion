@@ -1,0 +1,48 @@
+{
+  "name": "누리",
+  "user_name": "",
+  "persona": "다정하고 똑똑한 개인 비서이자 공부 친구. 짧고 분명하게 말하고, 모르는 건 모른다고 한다. 사용자를 존중하는 존댓말을 쓴다.",
+  "chat_model": "qwen3:8b",
+  "vision_model": "gemma3:4b",
+  "ollama_url": "http://127.0.0.1:11434",
+  "active_model": "main",
+  "alt_label": "Qwen3.5-9B (llama.cpp)",
+  "alt_dir": "D:\\sumin\\local-ai",
+  "alt_model_file": "Qwen_Qwen3.5-9B-Q4_K_M.gguf",
+  "alt_mmproj": "mmproj-Qwen_Qwen3.5-9B-f16.gguf",
+  "alt_port": 8781,
+  "alt_gpu_layers": 99,
+  "num_ctx": 8192,
+  "think": false,
+  "host": "127.0.0.1",
+  "port": 8780,
+  "pin": "",
+  "whisper_model": "small",
+  "whisper_language": "auto",
+  "youtube_api_key": "",
+  "image_backend": "svg",
+  "news_brief_enabled": false,
+  "news_brief_time": "08:00",
+  "news_feeds": [
+    {
+      "name": "구글뉴스 주요",
+      "url": "https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko"
+    },
+    {
+      "name": "구글뉴스 IT",
+      "url": "https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=ko&gl=KR&ceid=KR:ko"
+    },
+    {
+      "name": "구글뉴스 과학",
+      "url": "https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=ko&gl=KR&ceid=KR:ko"
+    },
+    {
+      "name": "연합뉴스",
+      "url": "https://www.yna.co.kr/rss/news.xml"
+    },
+    {
+      "name": "BBC World",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml"
+    }
+  ]
+}

@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>누리</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='13' fill='%233f6f5a'/><circle cx='12' cy='14' r='2' fill='white'/><circle cx='20' cy='14' r='2' fill='white'/><path d='M11 20q5 4 10 0' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<aside id="side">
+  <div id="brand"><span class="dot"></span><span id="brandName">누리</span></div>
+  <nav id="nav">
+    <button data-p="chat"><span class="ic">💬</span><span class="lb">대화</span></button>
+    <button data-p="study"><span class="ic">📚</span><span class="lb">공부·녹음·강의</span></button>
+    <button data-p="notes"><span class="ic">📝</span><span class="lb">메모장</span></button>
+    <button data-p="docs"><span class="ic">📄</span><span class="lb">문서 제작</span></button>
+    <button data-p="news"><span class="ic">📰</span><span class="lb">뉴스</span></button>
+    <button data-p="calendar"><span class="ic">📅</span><span class="lb">일정</span></button>
+    <button data-p="focus"><span class="ic">⏱️</span><span class="lb">타이머·뽀모도로</span></button>
+    <button data-p="music"><span class="ic">🎵</span><span class="lb">음악</span></button>
+    <button data-p="lab"><span class="ic">🧪</span><span class="lb">실험·시뮬레이션</span></button>
+    <button data-p="draw"><span class="ic">🎨</span><span class="lb">그림</span></button>
+    <button data-p="media"><span class="ic">🎬</span><span class="lb">영상·음원 편집</span></button>
+    <button data-p="teach"><span class="ic">🌱</span><span class="lb">가르치기</span></button>
+    <button data-p="settings"><span class="ic">⚙️</span><span class="lb">설정</span></button>
+  </nav>
+  <div class="side-bottom">
+    <div class="model-switch" title="대화에 쓸 두뇌">
+      <button data-m="main">메인</button><button data-m="alt">다른 모델</button>
+    </div>
+    <button id="miniTimer"></button>
+    <button id="jobsBtn"></button>
+    <div class="status"><span id="stOllama">Ollama</span><span id="stNet">인터넷</span></div>
+  </div>
+</aside>
+
+<main>
+<!-- ============ 대화 ============ -->
+<section class="panel" data-panel="chat">
+  <div class="chat-wrap">
+    <div class="conv-list" id="convList"></div>
+    <div class="chat">
+      <div class="chat-head">
+        <b id="convTitle">새 대화</b>
+        <div class="row">
+          <button class="btn small" id="learnBtn" title="이 대화에서 기억할 만한 것을 뽑아 저장">🌱 이 대화에서 배우기</button>
+          <button class="btn small" id="newConvBtn">+ 새 대화</button>
+        </div>
+      </div>
+      <div id="msgs"></div>
+      <div id="attachPreview" class="row" style="padding:0 12px"></div>
+      <div class="composer">
+        <label class="btn" title="그림/사진 보여주기">🖼️<input type="file" id="imgInput" accept="image/*" hidden multiple></label>
+        <textarea id="input" rows="1" placeholder="무엇이든 말해 주세요. (Enter 보내기, Shift+Enter 줄바꿈)"></textarea>
+        <button class="btn primary" id="sendBtn">보내기</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 공부 ============ -->
+<section class="panel" data-panel="study">
+  <h1>공부 · 녹음 · 강의 정리</h1>
+  <p class="sub">녹음 파일, 강의 영상, PDF·PPT를 올리면 받아쓰고 정리해서 노트로 만들어요. 노트로 플래시카드와 퀴즈도 만들 수 있어요.</p>
+  <div class="grid">
+    <div class="card col">
+      <h2>🎙️ 파일로 정리하기</h2>
+      <input type="file" id="studyFile" accept="audio/*,video/*,.pdf,.pptx,.docx,.txt,.md,.srt">
+      <div class="row">
+        <select id="studyMode"><option value="lecture">강의 노트</option><option value="recording">녹음 정리(회의·대화)</option><option value="study">공부 정리</option></select>
+        <input type="text" id="studyTitle" class="grow" placeholder="제목 (선택)">
+      </div>
+      <button class="btn primary" id="studyUploadBtn">정리 시작</button>
+      <p class="muted">녹음/영상은 먼저 받아쓰기를 해요. 1시간짜리 녹음은 이 노트북에서 30분 이상 걸릴 수 있어요. 받아쓰기 결과와 자막(.srt)도 같이 저장돼요.</p>
+    </div>
+    <div class="card col">
+      <h2>📋 글 붙여넣어 정리하기</h2>
+      <textarea id="studyText" rows="7" placeholder="강의 내용, 필기, 교재 일부를 붙여넣으세요"></textarea>
+      <div class="row">
+        <select id="studyMode2"><option value="study">공부 정리</option><option value="lecture">강의 노트</option><option value="recording">요약 정리</option></select>
+        <button class="btn primary" id="studyTextBtn">정리하기</button>
+      </div>
+    </div>
+    <div class="card col">
+      <h2>🃏 오늘 복습할 카드 <span class="tag" id="dueCount"></span></h2>
+      <div id="flashArea"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px" id="quizCard" hidden>
+    <h2 id="quizTitle">퀴즈</h2><div id="quizArea"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h2>📒 공부 노트</h2>
+    <div class="list" id="studyNotes"></div>
+  </div>
+</section>
+
+<!-- ============ 메모장 ============ -->
+<section class="panel" data-panel="notes">
+  <div class="split">
+    <div class="col">
+      <div class="row"><input type="text" id="noteSearch" class="grow" placeholder="🔍 메모 검색"><button class="btn primary" id="noteNewBtn">+ 새 메모</button></div>
+      <select id="noteFilter">
+        <option value="">전체</option><option value="memo">메모</option><option value="lecture">강의</option><option value="recording">녹음</option>
+        <option value="transcript">받아쓰기</option><option value="study">공부</option><option value="news">뉴스</option><option value="document">문서</option><option value="experiment">실험</option>
+      </select>
+      <div class="list" id="noteList"></div>
+    </div>
+    <div class="card col editor" id="noteEditor">
+      <div class="row">
+        <input type="text" id="noteTitle" class="grow" placeholder="제목">
+        <select id="noteKind"><option value="memo">메모</option><option value="lecture">강의</option><option value="recording">녹음</option><option value="transcript">받아쓰기</option><option value="study">공부</option><option value="news">뉴스</option><option value="document">문서</option><option value="experiment">실험</option></select>
+      </div>
+      <div class="row">
+        <button class="btn primary small" id="noteSaveBtn">저장 (Ctrl+S)</button>
+        <button class="btn small" id="notePreviewBtn">👁️ 미리보기</button>
+        <select id="noteExport" class="btn small"><option value="">내보내기…</option><option value="docx">Word (.docx)</option><option value="html">웹/PDF용 (.html)</option><option value="md">마크다운 (.md)</option></select>
+        <select id="noteAI" class="btn small"><option value="">✨ AI…</option><option value="polish">다듬기</option><option value="study">공부 노트로</option><option value="lecture">강의 노트로</option><option value="flashcards">플래시카드 만들기</option><option value="quiz">퀴즈 만들기</option></select>
+        <span class="grow"></span>
+        <button class="btn small danger" id="noteDelBtn">삭제</button>
+      </div>
+      <textarea id="noteBody" placeholder="여기에 적으세요. 마크다운(# 제목, - 목록, **굵게**)을 쓸 수 있어요."></textarea>
+      <div class="preview md" id="notePreview" hidden></div>
+      <span class="muted" id="noteStatus"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 문서 ============ -->
+<section class="panel" data-panel="docs">
+  <h1>문서 제작</h1>
+  <p class="sub">무엇을 쓸지 말하면 초안을 써서 Word·HTML·마크다운 파일로 만들어요. 만든 문서는 메모장에도 저장돼서 고칠 수 있어요.</p>
+  <div class="grid">
+    <div class="card col">
+      <input type="text" id="docTitle" placeholder="문서 제목 (예: 3주차 실험 보고서)">
+      <textarea id="docReq" rows="7" placeholder="무엇을 쓸지 자세히 적어 주세요. 목차, 꼭 들어갈 내용, 독자 등"></textarea>
+      <div class="row">
+        <select id="docFmt"><option value="docx">Word (.docx)</option><option value="html">HTML (인쇄→PDF)</option><option value="md">마크다운</option></select>
+        <select id="docLen"><option>짧게</option><option selected>보통</option><option>길고 자세하게</option></select>
+        <input type="text" id="docTone" class="grow" placeholder="문체 (예: 보고서체, 친근하게)">
+      </div>
+      <button class="btn primary" id="docBtn">작성하기</button>
+      <p class="muted">PDF가 필요하면 HTML 파일을 열고 Ctrl+P → "PDF로 저장"을 고르세요.</p>
+    </div>
+    <div class="card"><h2>만든 문서</h2><div class="list" id="docList"></div></div>
+  </div>
+</section>
+
+<!-- ============ 뉴스 ============ -->
+<section class="panel" data-panel="news">
+  <h1>뉴스</h1>
+  <p class="sub">RSS로 뉴스를 모아요. 인터넷이 끊겨 있으면 마지막으로 모은 뉴스를 보여줘요.</p>
+  <div class="card col">
+    <div class="row">
+      <input type="text" id="newsTopic" class="grow" placeholder="주제로 찾기 (예: 인공지능, 반도체)">
+      <button class="btn" id="newsSearchBtn">찾기</button>
+      <button class="btn" id="newsRefreshBtn">새로고침</button>
+      <button class="btn primary" id="newsBriefBtn">📝 브리핑 만들기</button>
+    </div>
+    <div class="row muted">
+      <label><input type="checkbox" id="briefOn"> 매일 아침 자동 브리핑</label>
+      <input type="time" id="briefTime" value="08:00">
+      <span>(앱이 켜져 있을 때)</span>
+    </div>
+  </div>
+  <div class="list" id="newsList" style="margin-top:14px"></div>
+</section>
+
+<!-- ============ 일정 ============ -->
+<section class="panel" data-panel="calendar">
+  <h1>일정</h1>
+  <p class="sub">대화창에서 "내일 3시에 팀 회의 잡아줘"라고 말해도 돼요. 앱이 열려 있으면 시작 전에 알려드려요.</p>
+  <div class="grid">
+    <div class="card col">
+      <h2>일정 추가</h2>
+      <input type="text" id="evTitle" placeholder="무엇을">
+      <div class="row"><span class="muted">시작</span><input type="datetime-local" id="evStart" class="grow"></div>
+      <div class="row"><span class="muted">끝</span><input type="datetime-local" id="evEnd" class="grow"></div>
+      <input type="text" id="evNotes" placeholder="메모 (선택)">
+      <div class="row"><span class="muted">알림</span><select id="evRemind"><option value="0">시작할 때</option><option value="5">5분 전</option><option value="10" selected>10분 전</option><option value="30">30분 전</option><option value="60">1시간 전</option></select></div>
+      <button class="btn primary" id="evAddBtn">추가</button>
+      <div class="row"><a href="/api/events.ics" class="btn small">📤 휴대폰 캘린더로 내보내기 (.ics)</a><button class="btn small" id="notifBtn">🔔 알림 허용</button></div>
+    </div>
+    <div class="card"><h2>다가오는 일정</h2><div id="evList" class="list"></div></div>
+  </div>
+</section>
+
+<!-- ============ 집중 ============ -->
+<section class="panel" data-panel="focus">
+  <h1>타이머 · 뽀모도로</h1>
+  <p class="sub">다른 탭으로 가도 계속 돌아가요. 끝나면 소리와 알림으로 알려줘요.</p>
+  <div class="grid">
+    <div class="card">
+      <div class="clock" id="clock">25:00</div>
+      <div class="clock-label" id="clockLabel">준비</div>
+      <div class="ring"><div id="clockBar"></div></div>
+      <div class="row" style="justify-content:center">
+        <button class="btn" id="pauseBtn">⏸ 일시정지</button>
+        <button class="btn danger" id="stopBtn">■ 멈춤</button>
+      </div>
+    </div>
+    <div class="card col">
+      <h2>🍅 뽀모도로</h2>
+      <div class="row"><span>집중</span><input type="number" id="pWork" value="25" min="1" style="width:70px">분
+        <span>휴식</span><input type="number" id="pRest" value="5" min="1" style="width:70px">분
+        <span>×</span><input type="number" id="pCycles" value="4" min="1" style="width:60px"></div>
+      <input type="text" id="pLabel" placeholder="무엇에 집중하나요? (예: 통계 과제)">
+      <button class="btn primary" id="pomoBtn">뽀모도로 시작</button>
+      <h2 style="margin-top:10px">⏲️ 타이머</h2>
+      <div class="row"><input type="number" id="tMin" value="10" min="0.1" step="0.5" style="width:90px">분
+        <button class="btn" data-quick="3">3분</button><button class="btn" data-quick="5">5분</button><button class="btn" data-quick="15">15분</button>
+        <button class="btn primary" id="timerBtn">시작</button></div>
+    </div>
+    <div class="card">
+      <h2>집중 기록</h2>
+      <p id="focusSummary" class="muted"></p>
+      <div class="bars" id="focusBars"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 음악 ============ -->
+<section class="panel" data-panel="music">
+  <h1>음악</h1>
+  <p class="sub">유튜브에서 찾아 틀거나(온라인), 내 음악 폴더의 파일을 틀어요(오프라인). 오른쪽 아래 플레이어는 다른 탭에서도 계속 재생돼요.</p>
+  <div class="card col">
+    <div class="row">
+      <input type="text" id="musicQ" class="grow" placeholder="곡, 가수, 분위기 (예: 공부할 때 듣는 로파이)">
+      <button class="btn primary" id="musicSearchBtn">찾기</button>
+      <label class="btn">📁 내 음악 올리기<input type="file" id="musicUpload" accept="audio/*" hidden multiple></label>
+    </div>
+    <div class="row">
+      <button class="btn small" data-mq="lofi hip hop study">로파이</button>
+      <button class="btn small" data-mq="클래식 공부 음악">클래식</button>
+      <button class="btn small" data-mq="rain sounds for focus">빗소리</button>
+      <button class="btn small" data-mq="jazz cafe music">재즈 카페</button>
+      <button class="btn small" data-mq="잔잔한 피아노">피아노</button>
+    </div>
+  </div>
+  <h2 style="margin-top:18px">유튜브</h2><div class="tracks" id="ytResults"></div>
+  <h2 style="margin-top:18px">내 음악</h2><div class="list" id="localMusic"></div>
+</section>
+
+<!-- ============ 실험 ============ -->
+<section class="panel" data-panel="lab">
+  <h1>실험 · 시뮬레이션</h1>
+  <p class="sub">파이썬(numpy, matplotlib)으로 실험하고 그래프를 그려요. 대화창에서 부탁하면 누리가 코드를 쓰고, 실행 전에 승인을 받아요.</p>
+  <div class="grid">
+    <div class="card col">
+      <div class="row">
+        <select id="labExample" class="grow"><option value="">예제 불러오기…</option></select>
+        <button class="btn primary" id="labRunBtn">▶ 실행</button>
+      </div>
+      <textarea id="labCode" class="code" spellcheck="false"></textarea>
+      <div class="row"><input type="text" id="labAsk" class="grow" placeholder="AI에게 코드 부탁 (예: 주사위 두 개 합의 분포 시뮬레이션)"><button class="btn" id="labAskBtn">✨ 코드 쓰기</button></div>
+    </div>
+    <div class="card col">
+      <div class="row"><h2 class="grow" style="margin:0">결과</h2><button class="btn small" id="labSaveBtn">📒 실험 노트로 저장</button></div>
+      <div class="out" id="labOut">실행 결과가 여기 나와요.</div>
+      <div class="imgs" id="labImgs"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 그림 ============ -->
+<section class="panel" data-panel="draw">
+  <h1>그림</h1>
+  <p class="sub">설명하면 그려 주고, 내가 그린 그림을 보여주면 감상과 조언을 해줘요.</p>
+  <div class="grid">
+    <div class="card col">
+      <h2>✨ 그려줘</h2>
+      <textarea id="drawPrompt" rows="3" placeholder="예: 노을 지는 바닷가의 작은 등대"></textarea>
+      <div class="row"><select id="drawMode"><option value="svg">벡터 그림 (빠름)</option><option value="sd">사실적 그림 (Stable Diffusion, 설치 필요)</option></select>
+        <button class="btn primary" id="drawBtn">그리기</button></div>
+      <p class="muted" id="sdHint"></p>
+    </div>
+    <div class="card col">
+      <h2>🖌️ 스케치북</h2>
+      <canvas id="sketch" width="800" height="600"></canvas>
+      <div class="row">
+        <input type="color" id="penColor" value="#24221d"><input type="range" id="penSize" min="1" max="40" value="4">
+        <button class="btn small" id="eraserBtn">지우개</button><button class="btn small" id="clearBtn">전체 지우기</button>
+        <button class="btn small" id="sketchSaveBtn">저장</button>
+        <button class="btn small primary" id="sketchShowBtn">누리에게 보여주기</button>
+      </div>
+      <div class="md" id="sketchReply"></div>
+    </div>
+  </div>
+  <h2 style="margin-top:18px">그린 그림</h2><div class="gallery" id="drawGallery"></div>
+</section>
+
+<!-- ============ 미디어 ============ -->
+<section class="panel" data-panel="media">
+  <h1>영상 · 음원 편집</h1>
+  <p class="sub">원본은 그대로 두고 결과를 새 파일로 만들어요. 여러 파일 작업(이어붙이기, 배경음악, 자막)은 체크한 순서대로 써요.</p>
+  <div class="grid">
+    <div class="card col">
+      <div class="row"><label class="btn primary">📤 파일 올리기<input type="file" id="mediaUpload" accept="audio/*,video/*,.srt" hidden multiple></label><span class="muted">영상, 음원, 자막(.srt)</span></div>
+      <div class="list" id="mediaFiles"></div>
+    </div>
+    <div class="card col">
+      <div class="media-preview" id="mediaPreview"><div class="empty">파일 이름을 누르면 여기서 미리 볼 수 있어요</div></div>
+      <div class="row">
+        <button class="btn small" id="markStart">⏮ 지금 위치 → 시작</button>
+        <button class="btn small" id="markEnd">⏭ 지금 위치 → 끝</button>
+      </div>
+      <select id="mediaOp"></select>
+      <div class="row">
+        <input type="text" id="mStart" placeholder="시작 (0:10)" style="width:110px">
+        <input type="text" id="mEnd" placeholder="끝 (1:25)" style="width:110px">
+        <input type="text" id="mValue" class="grow" placeholder="값 (배속·dB·형식…)">
+      </div>
+      <button class="btn primary" id="mediaRunBtn">실행</button>
+      <p class="muted" id="mediaSel">선택한 파일: 없음</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 가르치기 ============ -->
+<section class="panel" data-panel="teach">
+  <h1>가르치기</h1>
+  <p class="sub">누리는 기억과 자료를 쌓으면서 자라요. 여기서 성격을 정하고, 기억을 고치고, 공부할 자료를 넣어 주세요.</p>
+  <div class="grid">
+    <div class="card col">
+      <h2>🪪 이름과 성격</h2>
+      <div class="row"><input type="text" id="tName" placeholder="AI 이름" class="grow"><input type="text" id="tUser" placeholder="내 이름(호칭)" class="grow"></div>
+      <textarea id="tPersona" rows="5" placeholder="성격, 말투, 역할"></textarea>
+      <button class="btn primary" id="tSaveBtn">저장</button>
+    </div>
+    <div class="card col">
+      <h2>🧠 기억 <span class="tag" id="memCount"></span></h2>
+      <div class="row"><input type="text" id="memText" class="grow" placeholder="예: 나는 아침형 인간이고 통계학을 전공한다">
+        <select id="memKind"><option value="fact">사실</option><option value="preference">선호</option><option value="lesson">배운 점(규칙)</option></select>
+        <button class="btn" id="memAddBtn">추가</button></div>
+      <div class="list" id="memList" style="max-height:340px;overflow:auto"></div>
+    </div>
+    <div class="card col">
+      <h2>📚 자료실</h2>
+      <p class="muted">교재·논문·강의자료(PDF, PPTX, DOCX, TXT)를 넣으면 대화할 때 찾아보고 답해요.</p>
+      <label class="btn">📤 자료 넣기<input type="file" id="libUpload" accept=".pdf,.pptx,.docx,.txt,.md,.csv" hidden multiple></label>
+      <div class="list" id="libList"></div>
+    </div>
+  </div>
+  <div class="card md" style="margin-top:16px">
+    <h2>키우는 방법</h2>
+    <ul>
+      <li><b>대화로:</b> "내 전공은 통계야, 기억해 줘"라고 말하면 기억에 저장해요. 대화가 끝나면 <b>🌱 이 대화에서 배우기</b>를 누르세요.</li>
+      <li><b>고쳐 주기:</b> 답이 별로면 👎를 누르고 어떻게 했어야 하는지 적어 주세요. 다음부터 규칙으로 지켜요.</li>
+      <li><b>자료로:</b> 자료실에 교재나 노트를 넣으면 "자료에서 찾아줘"라고 할 때 근거로 써요.</li>
+      <li><b>인터넷으로:</b> "○○ 검색해서 정리해 줘" → 정리된 내용을 메모로 저장해 두면 오프라인에서도 쓸 수 있어요.</li>
+      <li><b>두뇌 바꾸기:</b> 왼쪽 아래 <b>메인 / 다른 모델</b>로 바꿔 보며 비교하세요. 다른 모델(Qwen3.5-9B)은 더 최신이고 그림도 볼 수 있어요.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 설정 ============ -->
+<section class="panel" data-panel="settings">
+  <h1>설정</h1>
+  <p class="sub">모든 것은 이 컴퓨터 안(<code>data</code> 폴더)에 저장돼요. 비용은 들지 않아요.</p>
+  <div class="grid">
+    <div class="card col">
+      <h2>🧠 두뇌(모델)</h2>
+      <label>메인 모델 (Ollama) <select id="sChat"></select></label>
+      <label>그림 보는 모델 (Ollama) <select id="sVision"></select></label>
+      <div class="muted" id="altInfo"></div>
+      <label>다른 모델 폴더 <input type="text" id="sAltDir"></label>
+      <label>다른 모델 GPU 레이어 (내장그래픽 사용: 99, CPU만: 0) <input type="number" id="sAltNgl"></label>
+      <label><input type="checkbox" id="sThink"> 깊게 생각하기 (느리지만 어려운 문제에 좋음)</label>
+      <label>기억할 대화 길이(num_ctx) <select id="sCtx"><option>4096</option><option>8192</option><option>16384</option></select></label>
+    </div>
+    <div class="card col">
+      <h2>🎙️ 받아쓰기 · 🎵 음악 · 🎨 그림</h2>
+      <label>받아쓰기 모델 <select id="sWhisper"><option value="tiny">tiny (가장 빠름)</option><option value="base">base</option><option value="small">small (추천)</option><option value="medium">medium (정확, 느림)</option></select></label>
+      <label>받아쓰기 언어 <select id="sLang"><option value="auto">자동</option><option value="ko">한국어</option><option value="en">영어</option></select></label>
+      <label>YouTube API 키 (선택, 없어도 검색돼요) <input type="password" id="sYt" placeholder="AIza..."></label>
+      <label>기본 그림 방식 <select id="sImg"><option value="svg">벡터(SVG)</option><option value="sd">Stable Diffusion</option></select></label>
+    </div>
+    <div class="card col">
+      <h2>📱 다른 기기에서 쓰기</h2>
+      <label><input type="checkbox" id="sLan"> 같은 와이파이의 폰·태블릿에서 접속 허용</label>
+      <label>PIN (필수, 4자리 이상) <input type="password" id="sPin"></label>
+      <p class="muted">켜고 나면 앱을 다시 시작해야 해요. 실행 창에 폰에서 열 주소가 나와요.</p>
+    </div>
+  </div>
+  <div class="row" style="margin-top:16px"><button class="btn primary" id="sSaveBtn">설정 저장</button><span class="muted" id="sStatus"></span></div>
+</section>
+</main>
+
+<div id="dock">
+  <div class="bar"><span>🎵</span><span class="t" id="dockTitle">-</span>
+    <button id="dPrev" title="이전">⏮</button><button id="dPlay" title="재생/일시정지">⏯</button><button id="dNext" title="다음">⏭</button>
+    <button id="dVideo" title="영상 보기/숨기기">▣</button><button id="dClose" title="닫기">✕</button></div>
+  <div id="ytWrap" class="hide"><div id="ytPlayer"></div></div>
+  <audio id="localAudio" class="hide" controls></audio>
+</div>
+<div id="jobsPanel"></div>
+<div id="toasts"></div>
+<div id="login"><div class="card col" style="width:300px"><h2>PIN을 입력하세요</h2><input type="password" id="pinInput"><button class="btn primary" id="pinBtn">들어가기</button></div></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
